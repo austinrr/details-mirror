@@ -99,7 +99,7 @@ jobs:
         id: get_interface_version_num
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
         run: |
-          cd Details /
+          cd Details/
           echo "get_interface_version_num=$(cat Details_Classic.toc | sed -n -E -e 's/^## Interface: ([0-9]+).*/\1/p')" >> "$GITHUB_OUTPUT"
 
       - name: Update release.json
