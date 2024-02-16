@@ -1,9 +1,9 @@
-# A workflow that checkes the most recent LeatrixPlus-Classic relase on CurseForge that 
-# is different than the LeatricPlus-Classic verion included in this repo's release artifacts.
+# A workflow that checkes the most recent Details! Damage Meter relase on CurseForge that 
+# is different than the  Details! Damage Meter verion included in this repo's release artifacts.
 # If the release is different it will download the one from CurseForge, generate a new release.json file
 # and package those assets together in a new release using the verion number as the tag and release name.
 #
-# The reason for all of this is because LeatrixPlus-Classic is not hosted on a public repo nor does it have a relase.json
+# The reason for all of this is because Details! Damage Meter is not hosted on a public repo nor does it have a relase.json
 
 name: CI
 
@@ -99,8 +99,8 @@ jobs:
         id: get_interface_version_num
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
         run: |
-          cd Leatrix_Plus/
-          echo "get_interface_version_num=$(cat *.toc | sed -n -E -e 's/^## Interface: ([0-9]+).*/\1/p')" >> "$GITHUB_OUTPUT"
+          cd Details /
+          echo "get_interface_version_num=$(cat Details_Classic.toc | sed -n -E -e 's/^## Interface: ([0-9]+).*/\1/p')" >> "$GITHUB_OUTPUT"
 
       - name: Update release.json
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
