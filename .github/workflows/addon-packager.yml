@@ -46,7 +46,11 @@ jobs:
 
       - name: Set Env Var for Previous Release
         id: set-envvar-prev-release
-        run: echo "prev-release-filename=$(cat previous-release/release.json | jq -r '.releases[0].filename')" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "prev-release-filename=$( \
+          cat previous-release/release.json | \
+          jq -r '.releases[0].filename' | \
+          sed 's/\.zip//')" >> "$GITHUB_OUTPUT"
         
       - name: cUrl Curseforge
         id: curl-curseforge
@@ -117,7 +121,7 @@ jobs:
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
         id: make-tag
         run: |
-          version=$(echo $CURSE_FILENAME | sed -ne 's/[^0-9]\+\([0-9]\+\.[0-9]\+\.[0-9]\+\)\.zip/\1/p')
+          version=$(echo $CURSE_FILENAME | sed -ne 's/[^0-9]\+\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
           echo "tag=${version}" >> "$GITHUB_OUTPUT"
         
       - name: Make Release
