@@ -30,7 +30,6 @@ jobs:
     outputs:
       MY_FILENAME: ${{ steps.set-envvar-prev-release.outputs.prev-release-filename }}
       CURSE_FILENAME: ${{ steps.curl-curseforge.outputs.latest_curse_filename }}
-      CURSE_FILENAME_FIXED: ${{ steps.curl-curseforge.outputs.latest_curse_filename_nospace }}
       CURSE_FILEID: ${{ steps.curl-curseforge.outputs.latest_curse_fileid }}
         
     steps:
@@ -63,7 +62,6 @@ jobs:
           fileNameFixed=${fileNameRaw%.*}
           echo "latest_curse_fileid=$(cat curse-response.json | jq -r '.data[0].id')" >> "$GITHUB_OUTPUT"
           echo "latest_curse_filename=${fileNameFixed}" >> "$GITHUB_OUTPUT"
-          echo "latest_curse_filename_nospace=$(echo "${fileNameFixed}" | sed 's/ /_/g')
 
   # Download Job
   download-newer-version:
@@ -76,7 +74,6 @@ jobs:
     env:
       MY_FILENAME: ${{ needs.collect-version-information.outputs.MY_FILENAME }}
       CURSE_FILENAME: ${{ needs.collect-version-information.outputs.CURSE_FILENAME }}
-      CURSE_FILENAME_FIXED: ${{ needs.collect-version-information.outputs.CURSE_FILENAME_FIXED }}
       CURSE_FILEID: ${{ needs.collect-version-information.outputs.CURSE_FILEID }}
       
     steps:
@@ -95,14 +92,12 @@ jobs:
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
         run: |
           echo "New version detected! $CURSE_FILENAME"
-          ENCODED="$(echo $CURSE_FILENAME | sed 's/ /%20/g')" 
-          curl https://mediafilez.forgecdn.net/files/${CURSE_FILEID:0:4}/${CURSE_FILEID:4:3}/${ENCODED}.zip \
-            -o ${CURSE_FILENAME_FIXED}.zip
+          curl -O https://mediafilez.forgecdn.net/files/${CURSE_FILEID:0:4}/${CURSE_FILEID:4:3}/${CURSE_FILENAME}.zip
       
       - name: Unzip Addon Package
         id: unzip_addon_pkg
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
-        run: unzip ${CURSE_FILENAME_FIXED}.zip
+        run: unzip ${CURSE_FILENAME}.zip
 
       - name: Get Interface Version Number
         id: get_interface_version_num
@@ -133,7 +128,7 @@ jobs:
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "${{ env.CURSE_FILENAME_FIXED }}.zip,release.json"
+          artifacts: "${{ env.CURSE_FILENAME }}.zip,release.json"
           tag: ${{ steps.make-tag.outputs.tag }}
           latest: true
           
