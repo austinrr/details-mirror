@@ -99,22 +99,40 @@ jobs:
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
         run: unzip ${CURSE_FILENAME}.zip
 
-      - name: Get Interface Version Number
-        id: get_interface_version_num
+      - name: Get Interface Version Number Classic
+        id: get_interface_version_num_classic
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
         run: |
           cd Details/
-          echo "get_interface_version_num=$(cat Details_Classic.toc | sed -n -E -e 's/^## Interface: ([0-9]+).*/\1/p')" >> "$GITHUB_OUTPUT"
+          echo "get_interface_version_num_classic=$(cat Details_Classic.toc | sed -n -E -e 's/^## Interface: ([0-9]+).*/\1/p')" >> "$GITHUB_OUTPUT"
+
+      - name: Get Interface Version Retail
+        id: get_interface_version_num_retail
+        if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
+        run: |
+          cd Details/
+          echo "get_interface_version_num_retail=$(cat Details.toc | sed -n -E -e 's/^## Interface: ([0-9]+).*/\1/p')" >> "$GITHUB_OUTPUT"
 
       - name: Update release.json
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
         env:
-          NEW_INTERFACE: ${{ steps.get_interface_version_num.outputs.get_interface_version_num }}
+          CLASSIC_INTERFACE: ${{ steps.get_interface_version_num.outputs.get_interface_version_num_classic }}
         run: |
           FULLFILE_NAME="${CURSE_FILENAME}.zip"
           temp="$(\
-            jq --arg FILENAME "$FULLFILE_NAME" --argjson INTERFACE "$NEW_INTERFACE" \
+            jq --arg FILENAME "$FULLFILE_NAME" --argjson INTERFACE "$CLASSIC_INTERFACE" \
             '.releases[0].filename |= $FILENAME | .releases[0].metadata[0].interface |= $INTERFACE' release.json)" \
+            && echo "${temp}" > release.json
+
+      - name: Update release.json for retail
+        if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
+        env:
+          RETAIL_INTERFACE: ${{ steps.get_interface_version_num.outputs.get_interface_version_num_retail }}
+        run: |
+          FULLFILE_NAME="${CURSE_FILENAME}.zip"
+          temp="$(\
+            jq --arg FILENAME "$FULLFILE_NAME" --argjson INTERFACE "$RETAIL_INTERFACE" \
+            '.releases[0].filename |= $FILENAME | .releases[0].metadata[1].interface |= $INTERFACE' release.json)" \
             && echo "${temp}" > release.json
 
       - name: Make Tag
