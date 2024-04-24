@@ -104,19 +104,19 @@ jobs:
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
         run: |
           cd Details/
-          echo "get_interface_version_num_classic=$(cat Details_Classic.toc | sed -n -E -e 's/^## Interface: ([0-9]+).*/\1/p')" >> "$GITHUB_OUTPUT"
+          echo "interface_version_num_classic=$(cat Details_Classic.toc | sed -n -E -e 's/^## Interface: ([0-9]+).*/\1/p')" >> "$GITHUB_OUTPUT"
 
       - name: Get Interface Version Retail
         id: get_interface_version_num_retail
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
         run: |
           cd Details/
-          echo "get_interface_version_num_retail=$(cat Details.toc | sed -n -E -e 's/^## Interface: ([0-9]+).*/\1/p')" >> "$GITHUB_OUTPUT"
+          echo "interface_version_num_retail=$(cat Details.toc | sed -n -E -e 's/^## Interface: ([0-9]+).*/\1/p')" >> "$GITHUB_OUTPUT"
 
       - name: Update release.json
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
         env:
-          CLASSIC_INTERFACE: ${{ steps.get_interface_version_num.outputs.get_interface_version_num_classic }}
+          CLASSIC_INTERFACE: ${{ steps.get_interface_version_num_classic.outputs.interface_version_num_classic }}
         run: |
           FULLFILE_NAME="${CURSE_FILENAME}.zip"
           temp="$(\
@@ -127,7 +127,7 @@ jobs:
       - name: Update release.json for retail
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
         env:
-          RETAIL_INTERFACE: ${{ steps.get_interface_version_num.outputs.get_interface_version_num_retail }}
+          RETAIL_INTERFACE: ${{ steps.get_interface_version_num_retail.outputs.interface_version_num_retail }}
         run: |
           FULLFILE_NAME="${CURSE_FILENAME}.zip"
           temp="$(\
