@@ -1,4 +1,4 @@
-# A workflow that checkes the most recent Details! Damage Meter relase on CurseForge that 
+o# A workflow that checkes the most recent Details! Damage Meter relase on CurseForge that 
 # is different than the  Details! Damage Meter verion included in this repo's release artifacts.
 # If the release is different it will download the one from CurseForge, generate a new release.json file
 # and package those assets together in a new release using the verion number as the tag and release name.
@@ -142,6 +142,7 @@ jobs:
         id: make-tag
         run: |
           version=$(echo $CURSE_FILENAME | sed -ne 's/[^0-9]\+\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
+          echo tag=${version}
           echo "tag=${version}" >> "$GITHUB_OUTPUT"
         
       - name: Make Release
