@@ -137,11 +137,12 @@ jobs:
             '.releases[0].filename |= $FILENAME | .releases[0].metadata[1].interface |= $INTERFACE' release.json)" \
             && echo "${temp}" > release.json
 
+      # old version=$(echo $CURSE_FILENAME | sed -ne 's/[^0-9]\+\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
       - name: Make Tag
         if: ${{ env.MY_FILENAME != env.CURSE_FILENAME }}
         id: make-tag
         run: |
-          version=$(echo $CURSE_FILENAME | sed -ne 's/[^0-9]\+\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
+          version=$(echo $CURSE_FILENAME | sed -ne 's/[^0-9]\+\([0-9]\+\.[0-9]\+\).*/\1/p')
           echo tag=${version}
           echo "tag=${version}" >> "$GITHUB_OUTPUT"
         
